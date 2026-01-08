@@ -17,4 +17,14 @@ export class PostService{
 
         return [];
     }
+
+    getById = async (id : number) : Promise<Post | null> => {
+        const result = await this.repo.selectById(id);
+
+        if(!result){
+            return null;
+        }
+
+        return result;
+    }
 }

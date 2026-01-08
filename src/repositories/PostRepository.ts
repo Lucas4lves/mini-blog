@@ -19,4 +19,15 @@ export class PostRepository {
 
         return [];
     }
+
+    selectById = async (id : number) : Promise<Post | null> => {
+        const sql = `SELECT * FROM posts WHERE id = $1`;
+        const result = await this.dbDriver.query(sql, [id]);
+
+        if(!result){
+            return null;
+        }
+
+        return result.rows[0];
+    }
 }
