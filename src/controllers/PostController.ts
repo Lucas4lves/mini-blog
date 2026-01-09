@@ -8,6 +8,27 @@ export class PostController {
         this.service = svc;
     }
 
+    createPost = async(req: Request, res : Response) => {
+        const post = req.body;
+
+        const result = await this.service.create(post);
+        if(!result.success){
+            return res.status(500).json({
+                ...result,
+                message: "Unable to create a record",
+                data : null,
+                timestamp: new Date().toISOString()
+            })
+        }
+
+        return res.status(201).json({
+            ...result,
+            error : null,
+            message: "Record created successfully!",
+            timestamp: new Date().toISOString()
+        })
+    }
+
     getAll = async(req : Request, res : Response) => {
         const result = await this.service.getAll();
         if(!result.success){

@@ -10,6 +10,23 @@ export class PostRepository {
         this.dbDriver = driver
     }
 
+    insert = async(post : Omit<Post, 'id' | 'created_at' | 'updated_at' >) : Promise<Result<Post>> => {
+        const sql = `INSERT INTO posts (title, content, author) VALUES (
+            $1, $2, $3
+        ) RETURNING *`;
+
+        try{
+            const createdPost = await this.dbDriver.query(sql, [post.title, post.content, post.author]);
+            if(createdPost.rowCount === 0){
+                return { success: false, error: `Could not create a record...`}
+            }
+
+            return { success: true, data: createdPost.rows[0]}
+        }catch(err){
+            return { success: false, error: `${String(err)}`}
+        }
+    }
+
     selectAll = async () : Promise<Result<Post[]>> => {
         const sql = `SELECT * FROM POSTS ORDER BY id DESC`;
 

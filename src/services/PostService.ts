@@ -9,6 +9,18 @@ export class PostService{
         this.repo = repo
     }
 
+    create = async(post : Post) : Promise<Result<Post>> => {
+        const createdPost = await this.repo.insert(post);
+        if(!createdPost.success){
+            return createdPost;
+        }
+
+        return {
+            success: true,
+            data : createdPost.data
+        }
+    }
+
     getAll = async () : Promise<Result<Post[]>> => {
         const results = await this.repo.selectAll();
 
