@@ -20,6 +20,7 @@ app.get("/posts", postsController.getAll);
 app.get("/posts/:id", postsController.getOne);
 app.post("/posts/:id", postsController.updateOne);
 app.post("/posts", postsController.createPost);
+app.delete("/posts/:id", postsController.delete);
 
 app.listen(process.env.APP_PORT, () => {
     console.log(`Backend running at port ${process.env.APP_PORT}`);

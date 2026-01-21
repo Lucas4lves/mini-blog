@@ -2,6 +2,7 @@ import { PostService } from "../services/PostService";
 import { Request, Response } from "express";
 import { PostSchema, UpdatePostSchema } from "../validations/createPostValidation.js";
 import { Post } from "../models/Post";
+import { success } from "zod";
 
 export class PostController {
     private service : PostService
@@ -19,7 +20,7 @@ export class PostController {
             content: post.content,
             author: post.author
         });
-        const result = await this.service.create(validPost);
+        const result = await this.service.createPost(validPost);
         if(!result.success){
             return res.status(500).json({
                 ...result,
@@ -46,7 +47,7 @@ export class PostController {
     }
 
     getAll = async(req : Request, res : Response) => {
-        const result = await this.service.getAll();
+        const result = await this.service.getAllPosts();
         if(!result.success){
             return res.status(500).json({
                 success: false,
@@ -78,7 +79,7 @@ export class PostController {
             })
         }
 
-        const result = await this.service.getById(parseInt(id));
+        const result = await this.service.getPostData(parseInt(id));
 
         if(!result.success) {
             return res.status(500).json({
@@ -117,7 +118,7 @@ export class PostController {
             })
         }
 
-        const update = await this.service.updateOne(parseInt(id), updates);
+        const update = await this.service.editPost(parseInt(id), updates);
 
         if(!update.success){
             return res.status(500).json({
@@ -143,5 +144,30 @@ export class PostController {
                 error: err
             })
         }
+    }
+
+    delete = async (req : Request, res : Response ) => {
+        const paramId = req.params.id;
+
+        if(!paramId){
+            return res.status(500).json({
+                success: false,
+                error: `Post id not provided or invalid`
+            })
+        }
+
+        const result = await this.service.deletePost(parseInt(paramId));
+
+        if(!result.success){
+            return res.status(500).json({
+                success: false,
+                error: result.error
+            })
+        }
+
+        return res.status(201).json({
+            success: true,
+            message: result.data
+        })
     }
 }

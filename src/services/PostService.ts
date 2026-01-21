@@ -10,7 +10,7 @@ export class PostService{
         this.repo = repo
     }
 
-    create = async(post : PostDTO ) : Promise<Result<Post>> => {
+    createPost = async(post : PostDTO ) : Promise<Result<Post>> => {
         const createdPost = await this.repo.insert(post);
         if(!createdPost.success){
             return createdPost;
@@ -22,7 +22,7 @@ export class PostService{
         }
     }
 
-    getAll = async () : Promise<Result<Post[]>> => {
+    getAllPosts = async () : Promise<Result<Post[]>> => {
         const results = await this.repo.selectAll();
 
         if(!results.success){
@@ -32,7 +32,7 @@ export class PostService{
         return { success: true, data: results.data }
     }
 
-    getById = async (id : number) : Promise<Result<Post>> => {
+    getPostData = async (id : number) : Promise<Result<Post>> => {
         const result = await this.repo.selectById(id);
 
         if(!result.success){
@@ -42,7 +42,7 @@ export class PostService{
         return { success: true, data: result.data }
     }
 
-    updateOne = async (id : number, updates : Omit<Post, 'id' | 'created_at' | 'updated_at'>) : Promise<Result<Post>> => {
+    editPost = async (id : number, updates : Omit<Post, 'id' | 'created_at' | 'updated_at'>) : Promise<Result<Post>> => {
         const updated = await this.repo.update(id, updates);
 
         if(!updated.success){
@@ -50,5 +50,18 @@ export class PostService{
         }
 
         return { success: true, data: updated.data };
+    }
+
+    deletePost = async (id : number) : Promise<Result<any>> => {
+        const result = await this.repo.deleteOne(id);
+
+        if(!result.success){
+            return result;
+        }
+
+        return {
+            success: true,
+            data: result.data
+        }
     }
 }
