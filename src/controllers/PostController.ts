@@ -1,5 +1,7 @@
 import { PostService } from "../services/PostService";
 import { Request, Response } from "express";
+import { PostSchema, UpdatePostSchema } from "../validations/createPostValidation.js";
+import { Post } from "../models/Post";
 
 export class PostController {
     private service : PostService
@@ -9,9 +11,15 @@ export class PostController {
     }
 
     createPost = async(req: Request, res : Response) => {
-        const post = req.body;
+        const post : Post = req.body;
 
-        const result = await this.service.create(post);
+        try{
+            const validPost = await PostSchema.parseAsync({
+            title: post.title,
+            content: post.content,
+            author: post.author
+        });
+        const result = await this.service.create(validPost);
         if(!result.success){
             return res.status(500).json({
                 ...result,
@@ -27,6 +35,14 @@ export class PostController {
             message: "Record created successfully!",
             timestamp: new Date().toISOString()
         })
+        }catch(err ){
+                return res.status(400).json({
+                    success: false,
+                    error: err,
+                    timestamp: new Date().toISOString()
+                })
+        }
+
     }
 
     getAll = async(req : Request, res : Response) => {
@@ -67,7 +83,6 @@ export class PostController {
         if(!result.success) {
             return res.status(500).json({
                 success: false,
-                message: "Could not retrieve the record with id " + id,
                 data: null,
                 error: result.error,
                 timestamp : new Date().toISOString()
@@ -87,7 +102,12 @@ export class PostController {
         const id = req.params.id;
         const updates = req.body;
 
-        if(!id){
+        try{
+            const validUpdatePost = await UpdatePostSchema.parseAsync({
+                ...updates
+            });
+
+            if(!id){
             return res.status(400).json({
                 success: false,
                 error: `Invalid Id`,
@@ -116,5 +136,12 @@ export class PostController {
             error: null,
             timestamp: new Date().toISOString()
         })
+
+        }catch(err){
+            return res.status(400).json({
+                success: false,
+                error: err
+            })
+        }
     }
 }

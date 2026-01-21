@@ -1,6 +1,7 @@
 import { PostRepository } from "../repositories/PostRepository";
 import { Post } from "../models/Post";
 import { Result } from "../models/Result";
+import { PostDTO } from "../models/PostDTO";
 
 export class PostService{
     private repo : PostRepository
@@ -9,7 +10,7 @@ export class PostService{
         this.repo = repo
     }
 
-    create = async(post : Post) : Promise<Result<Post>> => {
+    create = async(post : PostDTO ) : Promise<Result<Post>> => {
         const createdPost = await this.repo.insert(post);
         if(!createdPost.success){
             return createdPost;
