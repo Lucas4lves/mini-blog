@@ -2,6 +2,8 @@ import { Post } from "../models/Post"
 import { Result } from "../models/Result"
 import { Pool } from "pg"
 import { writeUpdateStatetement } from "../utils/writeSetStatement.js"
+import { UpdatePostSchema } from "../validations/createPostValidation"
+import { PostDTO } from "../models/PostDTO"
 
 export class PostRepository {
     private dbDriver : Pool
@@ -10,7 +12,7 @@ export class PostRepository {
         this.dbDriver = driver
     }
 
-    insert = async(post : Omit<Post, 'id' | 'created_at' | 'updated_at' >) : Promise<Result<Post>> => {
+    insert = async(post : PostDTO) : Promise<Result<Post>> => {
         const sql = `INSERT INTO posts (title, content, author) VALUES (
             $1, $2, $3
         ) RETURNING *`;
