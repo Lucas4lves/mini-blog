@@ -2,7 +2,6 @@ import { Post } from "../models/Post"
 import { Result } from "../models/Result"
 import { Pool } from "pg"
 import { writeUpdateStatetement } from "../utils/writeSetStatement.js"
-import { UpdatePostSchema } from "../validations/createPostValidation"
 import { PostDTO } from "../models/PostDTO"
 
 export class PostRepository {
@@ -93,6 +92,33 @@ export class PostRepository {
             return {
                 success: false,
                 error: String(error)
+            }
+        }
+    }
+
+    deleteOne = async (id: number) : Promise<Result<any>> => {
+        const sql = `DELETE FROM posts WHERE id = $1`;
+        
+        try{
+            const result = await this.dbDriver.query(sql, [id]);
+
+            if(result.rowCount === 0){
+                return {
+                    success: false, 
+                    error: `Unable to delete record from database`
+                }
+            }
+
+            return {
+                success: true,
+                data: {
+                    message: `Post with id ${id} deleted successfully!`
+                }
+            }
+        }catch(err){
+            return {
+                success: false,
+                error: String(err)
             }
         }
     }
